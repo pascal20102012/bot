@@ -1,0 +1,55 @@
+from aiogram import Bot, Dispatcher,types
+from aiogram.utils import executor
+import logging
+from random import randint
+import aiofiles
+e=randint(1,100)
+count=1
+bot=Bot('5960890255:AAH0ulGElFigdG1k7DEiCyNhTfZSmZBJ7v0')
+dp=Dispatcher(bot)
+users=dict()
+k=0
+@dp.message_handler(commands='start')
+async def start_message(message:types.Message):
+    global count,k
+    if str(message.from_user.id) not in users.keys():
+        users[str(message.from_user.id)]=message.from_user.full_name
+        async with aiofiles.open('users.data.txt', 'w+') as users_file:
+            for ID, username in users.items():
+                await users_file.write(f'ID {ID}  | Username : {username}')
+                k=username
+    if count == 1:
+        await message.answer(f' угадай число')
+    else:
+        await  message.answer(f'Введите число')
+
+
+@dp.message_handler()
+async def echo(message: types.Message):
+    global count,e,k
+    try:
+        r=int(message.text)
+        if e>r:
+            await message.answer(f'Больше')
+            count+=1
+            await start_message(message)
+        elif e<r:
+            await message.answer(f'Меньше')
+            count+=1
+            await start_message(message)
+        else:
+            await message.answer(f'угадал с {count} попыток')
+            with open('high_score.txt','w+') as high_score:
+                if len(high_score.read())==0:
+                    high_score.write(f'Username : {k} ,Count:{count}')
+                elif int(high_score.read())>count:
+                    await message.answer(f'ура')
+                    high_score.write(f'Username : {k} ,Count:{count}')
+            count=0
+    except ValueError:
+        await message.answer(f'Ошибка!\n данные иметь числовой тип ')
+        await start_message(message)
+
+if __name__=='__main__':
+    print('bot polling started')
+    executor.start_polling(dp, skip_updates=True)
