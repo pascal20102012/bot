@@ -5,7 +5,7 @@ from random import randint
 import aiofiles
 e=randint(1,100)
 count=1
-bot=Bot('5960890255:AAH0ulGElFigdG1k7DEiCyNhTfZSmZBJ7v0')
+bot=Bot('ЧТО ХОТЕЛ ТОКЕН УКРАСТЬ')
 dp=Dispatcher(bot)
 users=dict()
 k=0
